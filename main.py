@@ -14,7 +14,7 @@ class VideoSegment(BaseModel):
     end_time: float
     text: str
 
-class ResponseTranscriptionAndSummary(BaseModel):
+class Response(BaseModel):
     videoKey: str
     language: str
     transcription: str
@@ -27,26 +27,26 @@ class ResponseTranscriptionAndSummary(BaseModel):
 #     model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
 
-@app.post('/process', response_model=ResponseTranscriptionAndSummary)
+@app.post('/process', response_model=Response)
 async def get_prediction(videoInput: VideoLink):
     videoKey = videoInput.link.split("/")[-1].replace(".mp4", "")
-    # try:
-    transcription = transcribe(videoInput.link)
-    transcription_str = '\n'.join([segment['text'] for segment in transcription['transcription']])
-    if transcription_str == "":
-        raise HTTPException(status_code=400, detail="Invalid video link. Transcription failed.")
-    summary = summarize(transcription_str)
-    if summary == "":
-        raise HTTPException(status_code=400, detail="Invalid video link. Summarization failed.")
-    return {
-        "videoKey": videoKey,
-        "language": transcription['language'],
-        "transcription": transcription_str,
-        "segments": transcription['transcription'],
-        "summary": summary
-    }
+    try:
+        transcription = transcribe(videoInput.link)
+        transcription_str = '\n'.join([segment['text'] for segment in transcription['transcription']])
+        if transcription_str == "":
+            raise HTTPException(status_code=400, detail="Invalid video link. Transcription failed.")
+        summary = summarize(transcription_str)
+        if summary == "":
+            raise HTTPException(status_code=400, detail="Invalid video link. Summarization failed.")
+        return {
+            "videoKey": videoKey,
+            "language": transcription['language'],
+            "transcription": transcription_str,
+            "segments": transcription['transcription'],
+            "summary": summary
+        }
          
-    # except:
-    #     raise HTTPException(status_code=400, detail="Invalid video link. Process failed.")
+    except:
+        raise HTTPException(status_code=400, detail="Invalid video link. Process failed.")
 
 

@@ -1,6 +1,6 @@
 import pandas as pd
 from source import model
-import openai
+from source import openai 
 
 
 def transcribe(videoLink):
@@ -11,8 +11,8 @@ def transcribe(videoLink):
     return {'language': info.language, 'transcription': transcription_json}
 
 def summarize(transcription):
-    openai.api_key = "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"
-    messages = [{"role": "system", "content": "An AI assistant that is an expert in YouTube video script summarization. It can summarize any video script in a few seconds. It can also answer questions about the video script."}]
+    # openai.api_key = "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"
+    messages = [{"role": "system", "content": "An AI assistant that is an expert in YouTube video script summarization."}]
     messages.append({"role": "user", "content": 'Summarize the following video based on the given script: ' + '\n'.join(transcription)})
     response = openai.ChatCompletion.create(model="gpt-3.5-turbo", messages=messages, max_tokens=2048, temperature=1)
     return response.choices[0].message.content
