@@ -15,5 +15,3 @@ model = WhisperModel(model_size, device="cpu", compute_type="int8")
 load_dotenv()
 
 openai_api_key = os.getenv("OPENAI_API_KEY")
-
-# openai.api_key = "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"
