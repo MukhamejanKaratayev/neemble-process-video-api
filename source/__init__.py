@@ -1,7 +1,9 @@
 # Imports
 from fastapi import FastAPI
 from faster_whisper import WhisperModel
-import openai
+from dotenv import load_dotenv
+import os
+# import openai
 # Initialize FastAPI app
 app = FastAPI(title="Neemble ML API", description="Transcribe and summarize video", version="1.0")
 
@@ -9,4 +11,9 @@ app = FastAPI(title="Neemble ML API", description="Transcribe and summarize vide
 model_size = "base"
 model = WhisperModel(model_size, device="cpu", compute_type="int8")
 
-openai.api_key = "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"
+# Load OpenAI API key
+load_dotenv()
+
+openai_api_key = os.getenv("OPENAI_API_KEY")
+
+# openai.api_key = "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"

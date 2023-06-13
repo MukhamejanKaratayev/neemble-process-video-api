@@ -1,0 +1,6 @@
+fastapi[all]
+faster-whisper
+openai
+pandas
+python-dotenv
+redis
