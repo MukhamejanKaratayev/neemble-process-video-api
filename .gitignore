@@ -1,3 +1,6 @@
 /venv
+*.pyc
+*.pyo
 .env
 .DS_Store
+/test.ipynb
