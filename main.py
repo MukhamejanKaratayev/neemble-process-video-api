@@ -5,6 +5,8 @@ from fastapi import HTTPException
 from typing import List
 from dotenv import load_dotenv
 import requests
+from fastapi import BackgroundTasks
+import json
 
 # Input for data validation
 class VideoLink(BaseModel):
@@ -27,17 +29,19 @@ class Response(BaseModel):
 # class Response(BaseModel):
 #     key: str
 
-# response_model=Response
-@app.post('/process')
-def get_prediction(videoInput: VideoLink):
-    # try:
+# Background task
+def process_video(videoInput: VideoLink):
+    summary = ""
     transcription = transcribe(videoInput.video)
     transcription_str = '\n'.join([segment['text'] for segment in transcription['transcription']])
     if transcription_str == "":
-        raise HTTPException(status_code=400, detail="Invalid video link. Transcription failed.")
-    summary = summarize(transcription_str)
+        # raise HTTPException(status_code=400, detail="Invalid video link. Transcription failed.")
+        transcription_str = "No transcription available."
+    else:
+        summary = summarize(transcription_str)
     if summary == "":
-        raise HTTPException(status_code=400, detail="Invalid video link. Summarization failed.")
+        # raise HTTPException(status_code=400, detail="Invalid video link. Summarization failed.")
+        summary = "No summary available."
     
     result = {
         "videoKey": videoInput.videoKey,
@@ -46,10 +50,17 @@ def get_prediction(videoInput: VideoLink):
         "segments": transcription['transcription'],
         "summary": summary
     }
-    
+    print(result)
     # send the result to another API http://127.0.0.1:8000/ru/api/video/fastapi/ using POST method
-    res = requests.post('http://127.0.0.1:8000/ru/api/video/fastapi/', json=result)
-    return True
+    res = requests.post('http://127.0.0.1:8000/ru/api/video/fastapi/', json=json.dumps(result))
+    print(res)
+
+# response_model=Response
+@app.post('/process')
+async def get_prediction(videoInput: VideoLink, background_tasks: BackgroundTasks):
+    # try:
+    background_tasks.add_task(process_video, videoInput)
+    return {"message": "Video is being processed."}
     # except:
     #     raise HTTPException(status_code=400, detail="Invalid video link. Process failed.")
 
