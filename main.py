@@ -52,7 +52,7 @@ def process_video(videoInput: VideoLink):
     }
     print(result)
     # send the result to another API http://127.0.0.1:8000/ru/api/video/fastapi/ using POST method
-    res = requests.post('http://127.0.0.1:8000/ru/api/video/fastapi/', json=json.dumps(result))
+    res = requests.post('http://127.0.0.1:8000/ru/api/video/post/meta/video/', json=json.dumps(result))
     print(res)
 
 # response_model=Response
