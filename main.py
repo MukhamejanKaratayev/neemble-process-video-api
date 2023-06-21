@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import requests
 from fastapi import BackgroundTasks
 import json
-
+import os
 # Input for data validation
 class VideoLink(BaseModel):
     videoKey: str = Field(..., example="9bZkp7q19f0")
@@ -30,7 +30,9 @@ class Response(BaseModel):
 #     key: str
 
 # Background task
+
 def process_video(videoInput: VideoLink):
+    load_dotenv()
     summary = ""
     transcription = transcribe(videoInput.video)
     transcription_str = '\n'.join([segment['text'] for segment in transcription['transcription']])
@@ -52,7 +54,7 @@ def process_video(videoInput: VideoLink):
     }
     print(result)
     # send the result to another API http://127.0.0.1:8000/ru/api/video/fastapi/ using POST method
-    res = requests.post('http://127.0.0.1:8000/ru/api/video/post/meta/video/', json=json.dumps(result))
+    res = requests.post(str(os.getenv("NIMBL_VIDEO_API_URL")) +'/ru/api/video/post/meta/video/', json.dumps(result))
     print(res)
 
 # response_model=Response
